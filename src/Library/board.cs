@@ -21,13 +21,13 @@ public class Board
         this.cells = new Cell[width, height];
     }
 
-    public Cell GetCell(int x, int y)
+    public bool IsAlive(int x, int y)
     {
-        return cells[x, y];
+        return cells[x, y].IsAlive;
     }
 
-    public void SetCell(int x, int y, Cell cell)
+    public void SetCell(int x, int y, bool isAlive)
     {
-        cells[x, y] = cell;
+        cells[x, y] = new Cell(isAlive);
     }
 }
