@@ -1,47 +1,44 @@
-bool[,] gameBoard = /* contenido del tablero */;
-int boardWidth = gameBoard.GetLength(0);
-int boardHeight = gameBoard.GetLength(1);
+using System;
 
-bool[,] cloneboard = new bool[boardWidth, boardHeight];
-for (int x = 0; x < boardWidth; x++)
+public class Engine
 {
-    for (int y = 0; y < boardHeight; y++)
+    public Board NextGeneration(Board board)
     {
-        int aliveNeighbors = 0;
-        for (int i = x-1; i<=x+1;i++)
+        Board nextBoard = new Board(board.Width, board.Height);
+        for (int x = 0; x < board.Width; x++)
         {
-            for (int j = y-1;j<=y+1;j++)
+            for (int y = 0; y < board.Height; y++)
             {
-                if(i>=0 && i<boardWidth && j>=0 && j < boardHeight && gameBoard[i,j])
+            int aliveNeighbors = this.CountAliveNeighbours(board, x, y);
+            bool isAlive = board.GetCell(x, y).IsAlive;
+            bool willBeAlive = (isAlive && (aliveNeighbors == 2 || aliveNeighbors == 3)) || (!isAlive && aliveNeighbors == 3);
+            nextBoard.SetCell(x, y, new Cell(willBeAlive));
+            }
+        }
+        return nextBoard;
+
+    }
+
+    private int CountAliveNeighbours(Board board, int x, int y)
+    {
+        int aliveNeighbours = 0;
+
+        for (int i = x - 1; i <= x + 1; i++)
+        {
+            for (int j = y - 1; j <= y + 1; j++)
+            {
+                if (i >= 0 && i < board.Width && j >= 0 && j < board.Height && board.GetCell(i, j).IsAlive)
                 {
-                    aliveNeighbors++;
+                    aliveNeighbours++;
                 }
             }
         }
-        if(gameBoard[x,y])
+
+        if (board.GetCell(x, y).IsAlive)
         {
-            aliveNeighbors--;
+            aliveNeighbours--;
         }
-        if (gameBoard[x,y] && aliveNeighbors < 2)
-        {
-            // Célula muere por baja población
-            cloneboard[x,y] = false;
-        }
-        else if (gameBoard[x,y] && aliveNeighbors > 3)
-        {
-            // Célula muere por sobrepoblación
-            cloneboard[x,y] = false;
-        }
-        else if (!gameBoard[x,y] && aliveNeighbors == 3)
-        {
-            // Célula nace por reproducción
-            cloneboard[x,y] = true;
-        }
-        else
-        {
-            // Célula mantiene el estado que tenía
-            cloneboard[x,y] = gameBoard[x,y];
-        }
+
+        return aliveNeighbours;
     }
 }
-gameBoard = cloneboard;
